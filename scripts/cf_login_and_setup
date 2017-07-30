@@ -5,8 +5,9 @@ HOST=$1
 SPACE=${2:-"integration"}
 
 cf api api.$HOST --skip-ssl-validation
+cf_adminuser=${CF_ADMINUSER:-"admin"}
 cf_password=${CF_PASSWORD:-"admin"}
-cf login -u admin -p $cf_password -o pivotal -s $SPACE || true
+cf login -u $cf_adminuser -p $cf_password -o pivotal -s $SPACE || true
 
 cf create-org pivotal
 cf target -o pivotal
@@ -14,4 +15,4 @@ cf target -o pivotal
 cf create-space $SPACE -o pivotal
 cf target -s $SPACE -o pivotal
 
-cf login -u admin -p $cf_password -o pivotal -s $SPACE
+cf login -u $cf_adminuser -p $cf_password -o pivotal -s $SPACE
