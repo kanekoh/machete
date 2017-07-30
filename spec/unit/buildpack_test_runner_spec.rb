@@ -20,6 +20,7 @@ module Machete
           expect(subject.rspec_options).to eq('cf_spec')
           expect(subject.shared_host).to eq(false)
           expect(subject.delete_space_on_exit).to eq(false)
+          expect(subject.integration_org).to eq('pivotal')
         end
       end
 
@@ -79,6 +80,14 @@ module Machete
         it 'sets build to false and upload to false' do
           expect(subject.should_build).to eq(false)
           expect(subject.should_upload).to eq(false)
+        end
+      end
+
+      context 'while setting the integration test org' do
+        let(:args) {['--integration-org=integration']}
+
+        it 'sets integration_org' do
+          expect(subject.integration_org).to eq('integration')
         end
       end
 

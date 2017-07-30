@@ -56,6 +56,9 @@ BUNDLE_GEMFILE=cf.Gemfile BUILDPACK_MODE=#{@mode} CF_STACK=#{@stack} SHARED_HOST
       end
 
       language = detect_language
+      unless @integration_org
+        @integration_org = "pivotal"
+      end
       unless @integration_space
         @integration_space = "integration-#{language}-#{Time.now.to_i}"
       end
@@ -64,7 +67,7 @@ BUNDLE_GEMFILE=cf.Gemfile BUILDPACK_MODE=#{@mode} CF_STACK=#{@stack} SHARED_HOST
 
       script_dir = File.expand_path(File.join(__dir__, '..', '..', 'scripts'))
 
-      system "#{script_dir}/cf_login_and_setup #{@host} #{@integration_space}"
+      system "#{script_dir}/cf_login_and_setup #{@host} #@{integration_org} #{@integration_space}"
 
       if @should_upload
         if @shared_host
@@ -101,6 +104,8 @@ Options:
                                   # Default: true
     [--shared-host]               # Specifies whether to replace the standard buildpack when uploading to cf. (only works if upload and build)
                                   # Default: false
+    [--integration-org=ORG]       # Org to use for integration specs
+                                  # Default: pivotal
     [--integration-space=SPACE]   # Space to use for integration specs
                                   # Default: generated from the name of the buildpack + a timestamp
     [--delete-space-on-exit]      # Specifes whether to delete the integration space after specs have finished
@@ -241,6 +246,9 @@ ERROR
       if options[:rspec]
         @rspec_options = options[:rspec].join(' ')
       end
+      if options[:integration_org]
+        @integration_org = options[:integration_org]
+      end
       if options[:integration_space]
         @integration_space = options[:integration_space]
       end
@@ -276,6 +284,8 @@ ERROR
           options[:no_upload] = true
         when '--shared-host'
           options[:shared_host] = true
+        when /\-\-integration\-org=(.*)/
+          options[:integration_org] = $1
         when /\-\-integration\-space=(.*)/
           options[:integration_space] = $1
         when '--delete-space-on-exit'
